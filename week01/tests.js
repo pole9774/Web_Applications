@@ -1,7 +1,5 @@
 'use strict';
 
-//ciao
-
 let book = {
 author : "Enrico",
 pages: 340,
