@@ -56,7 +56,10 @@ function App() {
 
   return (
     <BrowserRouter>
-    
+      <Routes>
+        <Route path="/" element={loggedIn ? <MainLayout project={projects} /> : <Navigate replace to='/login' />} />
+        <Route path="/login" element={!loggedIn ? <LoginLayout login={handleLogin} /> : <Navigate replace to='/' />} />
+      </Routes>
     </BrowserRouter>
   );
 }
