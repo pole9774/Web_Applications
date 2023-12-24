@@ -1,5 +1,3 @@
-import 'bootstrap-icons/font/bootstrap-icons.css';
-
 import { React, useContext, useState, useEffect } from 'react';
 import { Row, Col, Button, Spinner, Container, Alert, Table, Image, Form } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';

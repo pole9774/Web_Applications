@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { React, useState, useEffect, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
+import { MainLayout, LoginLayout } from './components/Layout';
+
 import API from './API';
 
 function App() {
@@ -44,7 +46,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (dirty) {
+    if (dirty && loggedIn) {
       API.getProjects()
         .then((projects) => {
           setProjects(projects);
@@ -52,12 +54,27 @@ function App() {
         })
         .catch((err) => handleErrors(err));
     }
-  }, [dirty]);
+  }, [dirty, loggedIn]);
+
+  /**
+   * This function handles the login process.
+   * It requires a username and a password inside a "credentials" object.
+   */
+  const handleLogin = async (credentials) => {
+    try {
+      const user = await API.logIn(credentials);
+      setUser(user);
+      setLoggedIn(true);
+    } catch (err) {
+      // error is handled and visualized in the login form, do not manage error, throw it
+      throw err;
+    }
+  };
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={loggedIn ? <MainLayout project={projects} /> : <Navigate replace to='/login' />} />
+        <Route path="/" element={loggedIn ? <MainLayout projects={projects} /> : <Navigate replace to='/login' />} />
         <Route path="/login" element={!loggedIn ? <LoginLayout login={handleLogin} /> : <Navigate replace to='/' />} />
       </Routes>
     </BrowserRouter>
