@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { React, useState, useEffect, useContext } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+import API from './API';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [dirty, setDirty] = useState(true);
+
+  // This state keeps track if the user is currently logged-in.
+  const [loggedIn, setLoggedIn] = useState(false);
+  // This state contains the user's info.
+  const [user, setUser] = useState(null);
+
+  // This state contains the list of all the projects (it is initialized from a predefined array).
+  const [projects, setProjects] = useState([]);
+
+  const [message, setMessage] = useState('');
+
+  // If an error occurs, the error message will be shown in a toast.
+  const handleErrors = (err) => {
+    let msg = '';
+    if (err.error) msg = err.error;
+    else if (String(err) === "string") msg = String(err);
+    else msg = "Unknown Error";
+    setMessage(msg); // WARN: a more complex application requires a queue of messages. In this example only last error is shown.
+  }
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // here you have the user info, if already logged in
+        const user = await API.getUserInfo();
+        setLoggedIn(true);
+        setUser(user);
+      } catch (err) {
+        // NO need to do anything: user is simply not yet authenticated
+        //handleErrors(err);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (dirty) {
+      API.getProjects()
+        .then((projects) => {
+          setProjects(projects);
+          setDirty(false);
+        })
+        .catch((err) => handleErrors(err));
+    }
+  }, [dirty]);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+    
+    </BrowserRouter>
+  );
 }
 
 export default App
