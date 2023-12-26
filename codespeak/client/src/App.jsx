@@ -1,9 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { React, useState, useEffect, useContext } from 'react';
+import { React, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import { MainLayout, LoginLayout } from './components/Layout';
+import { MainLayout, ProjectDetailsLayout, QuestionForm, LoginLayout } from './components/Layout';
 
 import API from './API';
 
@@ -74,8 +74,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={loggedIn ? <MainLayout projects={projects} /> : <Navigate replace to='/login' />} />
+        <Route path="/" element={loggedIn ? <MainLayout projects={projects} user={user} /> : <Navigate replace to='/login' />} />
         <Route path="/login" element={!loggedIn ? <LoginLayout login={handleLogin} /> : <Navigate replace to='/' />} />
+        <Route path="/project/:id" element={<ProjectDetailsLayout projects={projects} user={user} />} />
+        <Route path="/project/:id/make-question" element={<QuestionForm projects={projects} user={user} />} />
       </Routes>
     </BrowserRouter>
   );
