@@ -9,7 +9,8 @@ import API from './API';
 
 function App() {
 
-  const [dirty, setDirty] = useState(true);
+  const [p_dirty, setPDirty] = useState(true);
+  const [q_dirty, setQDirty] = useState(true);
 
   // This state keeps track if the user is currently logged-in.
   const [loggedIn, setLoggedIn] = useState(false);
@@ -18,6 +19,9 @@ function App() {
 
   // This state contains the list of all the projects (it is initialized from a predefined array).
   const [projects, setProjects] = useState([]);
+
+  // This state contains the list of all the questions (it is initialized from a predefined array).
+  const [questions, setQuestions] = useState([]);
 
   const [message, setMessage] = useState('');
 
@@ -46,15 +50,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (dirty && loggedIn) {
+    if (p_dirty && loggedIn) {
       API.getProjects()
         .then((projects) => {
           setProjects(projects);
-          setDirty(false);
+          setPDirty(false);
         })
         .catch((err) => handleErrors(err));
     }
-  }, [dirty, loggedIn]);
+  }, [p_dirty, loggedIn]);
+
+  useEffect(() => {
+    if (q_dirty && loggedIn) {
+      API.getQuestions()
+        .then((questions) => {
+          setQuestions(questions);
+          setQDirty(false);
+        })
+        .catch((err) => handleErrors(err));
+    }
+  }, [q_dirty, loggedIn]);
 
   /**
    * This function handles the login process.
@@ -71,13 +86,21 @@ function App() {
     }
   };
 
+  const addQuestion = (e) => {
+    API.addQuestion(e)
+      .then(() => {
+        setQDirty(true);
+      })
+      .catch((err) => handleErrors(err));
+  }
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={loggedIn ? <MainLayout projects={projects} user={user} /> : <Navigate replace to='/login' />} />
         <Route path="/login" element={!loggedIn ? <LoginLayout login={handleLogin} /> : <Navigate replace to='/' />} />
         <Route path="/project/:id" element={<ProjectDetailsLayout projects={projects} user={user} />} />
-        <Route path="/project/:id/make-question" element={<QuestionForm projects={projects} user={user} />} />
+        <Route path="/project/:id/make-question" element={<QuestionForm projects={projects} user={user} addQuestion={addQuestion} />} />
       </Routes>
     </BrowserRouter>
   );

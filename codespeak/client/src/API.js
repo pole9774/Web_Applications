@@ -50,6 +50,42 @@ const getProjects = async () => {
 }
 
 /**
+ * Getting from the server side and returning the list of questions.
+ */
+const getQuestions = async () => {
+    return getJson(
+        fetch(SERVER_URL + 'questions', { credentials: 'include' })
+    ).then(json => {
+        return json.map((question) => {
+            const clientQuestion = {
+                id: question.id,
+                title: question.title,
+                description: question.description,
+                userid: question.userid,
+                projectid: question.projectid
+            }
+            return clientQuestion;
+        })
+    })
+}
+
+/**
+ * This function adds a new question in the back-end library.
+ */
+function addQuestion(question) {
+    return getJson(
+        fetch(SERVER_URL + "questions/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(question)
+        })
+    )
+}
+
+/**
  * This function wants username and password inside a "credentials" object.
  * It executes the log-in.
  */
@@ -88,5 +124,5 @@ const logOut = async () => {
     )
 }
 
-const API = { logIn, getUserInfo, logOut, getProjects };
+const API = { logIn, getUserInfo, logOut, getProjects, getQuestions, addQuestion };
 export default API;

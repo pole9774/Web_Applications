@@ -113,6 +113,49 @@ app.get('/api/projects',
     }
 );
 
+// 2. Retrieve the list of all questions.
+// GET /api/questions
+app.get('/api/questions',
+    isLoggedIn,
+    (req, res) => {
+        projectsDao.listQuestions()
+            .then(questions => res.json(questions))
+            .catch((err) => res.status(500).json(err));
+    }
+);
+
+// 3. Create a new question, by providing all relevant information.
+// POST /api/questions
+app.post('/api/questions',
+  isLoggedIn,
+  [
+    check('title').isLength({min: 1, max:160}),
+    check('description').isLength({min: 1, max:560}),
+    check('projectid').default(0).isInt()
+  ],
+  async (req, res) => {
+    // Is there any validation error?
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") }); // error message is a single string with all error joined together
+    }
+
+    const question = {
+      title: req.body.title,
+      description: req.body.description,
+      projectid: req.body.projectid,
+      user: req.user.id  // user is overwritten with the id of the user that is doing the request and it is logged in
+    };
+
+    try {
+      const result = await projectsDao.createQuestion(question); // NOTE: createQuestion returns the id of the new created object
+      res.json(result);
+    } catch (err) {
+      res.status(503).json({ error: `Database error during the creation of new question: ${err}` }); 
+    }
+  }
+);
+
 
 const PORT = 3001;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
