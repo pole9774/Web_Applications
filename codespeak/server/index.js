@@ -144,7 +144,7 @@ app.post('/api/questions',
       title: req.body.title,
       description: req.body.description,
       projectid: req.body.projectid,
-      user: req.user.id  // user is overwritten with the id of the user that is doing the request and it is logged in
+      userid: req.user.id  // user is overwritten with the id of the user that is doing the request and it is logged in
     };
 
     try {
