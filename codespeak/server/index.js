@@ -156,6 +156,47 @@ app.post('/api/questions',
   }
 );
 
+// 4. Retrieve the list of all solutions.
+// GET /api/solutions
+app.get('/api/solutions',
+    isLoggedIn,
+    (req, res) => {
+        projectsDao.listSolutions()
+            .then(solutions => res.json(solutions))
+            .catch((err) => res.status(500).json(err));
+    }
+);
+
+// 5. Create a new solution, by providing all relevant information.
+// POST /api/solutions
+app.post('/api/solutions',
+  isLoggedIn,
+  [
+    check('text').isLength({min: 1, max:1560}),
+    check('questionid').default(0).isInt()
+  ],
+  async (req, res) => {
+    // Is there any validation error?
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") }); // error message is a single string with all error joined together
+    }
+
+    const solution = {
+      text: req.body.text,
+      questionid: req.body.questionid,
+      userid: req.user.id  // user is overwritten with the id of the user that is doing the request and it is logged in
+    };
+
+    try {
+      const result = await projectsDao.createSolution(solution); // NOTE: createSolution returns the id of the new created object
+      res.json(result);
+    } catch (err) {
+      res.status(503).json({ error: `Database error during the creation of new solution: ${err}` }); 
+    }
+  }
+);
+
 
 const PORT = 3001;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));

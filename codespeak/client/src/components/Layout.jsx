@@ -161,6 +161,21 @@ function QuestionCard(props) {
     );
 }
 
+function SolutionCard(props) {
+
+    return (
+        <Card>
+            <Card.Body>
+                <Card.Title>{"Solution by user #" + props.solution.userid}</Card.Title>
+                <Card.Text>{props.solution.text}</Card.Text>
+                <Link to={`/solutions/${props.solution.id}`}>
+                    <Button variant="primary">Details</Button>
+                </Link>
+            </Card.Body>
+        </Card>
+    );
+}
+
 function ProjectDetailsLayout(props) {
 
     const { id } = useParams();
@@ -347,6 +362,75 @@ function QuestionPage(props) {
                     <Col md={9} className="ml-sm-auto">
                         <h2>{question.title}</h2>
                         <p>{question.description}</p>
+                        <h4>The AI has found 2 possible solutions:</h4>
+                    </Col>
+                </Row>
+            </Container>
+        </>
+    );
+}
+
+function SolutionPage(props) {
+
+    const { sid } = useParams();
+
+    const solutions = props.solutions;
+    const questions = props.questions;
+    const projects = props.projects;
+
+    let projectid = 0;
+    let projectname = "";
+    let questiontitle = "";
+
+    let solution = {
+        text: "",
+        questionid: 0,
+        userid: 0
+    };
+
+    for (let s of solutions) {
+        if (s.id == sid) {
+            solution.text = s.text;
+            solution.questionid = s.questionid;
+            solution.userid = s.userid;
+        }
+    }
+
+    for (let q of questions) {
+        if (q.id == solution.questionid) {
+            questiontitle = q.title;
+            projectid = q.projectid;
+        }
+    }
+
+    for (let p of projects) {
+        if (p.id == projectid) {
+            projectname = p.name;
+        }
+    }
+
+    return (
+        <>
+            <NavHeader user={props.user} />
+
+            <Container fluid>
+                <Row>
+                    <Col md={3} className="bg-light sidebar">
+                        <Nav defaultActiveKey="/" className="flex-column">
+                            <Nav.Link as={Link} to="/">My Projects</Nav.Link>
+                            <Nav.Link as={Link} to={"/projects/" + projectid}>{projectname}</Nav.Link>
+                            {
+                                question.userid == props.user.id ?
+                                    <Nav.Link as={Link} to={"/projects/" + projectid + "/myquestions"}>My questions</Nav.Link>
+                                    :
+                                    <Nav.Link as={Link} to={"/projects/" + projectid + "/questions"}>Questions</Nav.Link>
+                            }
+                            <Nav.Link as={Link} to={"/questions/" + qid}>{questiontitle}</Nav.Link>
+                        </Nav>
+                    </Col>
+                    <Col md={9} className="ml-sm-auto">
+                        <h2>{"Solution by user #" + solution.userid}</h2>
+                        <p>{solution.text}</p>
                     </Col>
                 </Row>
             </Container>

@@ -11,6 +11,7 @@ function App() {
 
   const [p_dirty, setPDirty] = useState(true);
   const [q_dirty, setQDirty] = useState(true);
+  const [s_dirty, setSDirty] = useState(true);
 
   // This state keeps track if the user is currently logged-in.
   const [loggedIn, setLoggedIn] = useState(false);
@@ -22,6 +23,9 @@ function App() {
 
   // This state contains the list of all the questions (it is initialized from a predefined array).
   const [questions, setQuestions] = useState([]);
+
+  // This state contains the list of all the solutions (it is initialized from a predefined array).
+  const [solutions, setSolutions] = useState([]);
 
   const [message, setMessage] = useState('');
 
@@ -71,6 +75,17 @@ function App() {
     }
   }, [q_dirty, loggedIn]);
 
+  useEffect(() => {
+    if (s_dirty && loggedIn) {
+      API.getSolutions()
+        .then((solutions) => {
+          setSolutions(solutions);
+          setSDirty(false);
+        })
+        .catch((err) => handleErrors(err));
+    }
+  }, [s_dirty, loggedIn]);
+
   /**
    * This function handles the login process.
    * It requires a username and a password inside a "credentials" object.
@@ -93,9 +108,10 @@ function App() {
         <Route path="/login" element={!loggedIn ? <LoginLayout login={handleLogin} /> : <Navigate replace to='/' />} />
         <Route path="/projects/:id" element={<ProjectDetailsLayout projects={projects} user={user} />} />
         <Route path="/projects/:id/make-question" element={<QuestionForm projects={projects} user={user} setQDirty={setQDirty} />} />
-        <Route path="/questions/:qid" element={<QuestionPage projects={projects} questions={questions} user={user} />} />
+        <Route path="/questions/:qid" element={<QuestionPage projects={projects} questions={questions} solutions={solutions} user={user} />} />
         <Route path="/projects/:id/questions" element={<QuestionsLayout projects={projects} questions={questions} user={user} />} />
         <Route path="/projects/:id/myquestions" element={<MyQuestionsLayout projects={projects} questions={questions} user={user} />} />
+        <Route path="/solutions/:sid" element={<SolutionPage projects={projects} questions={questions} solutions={solutions} user={user} />} />
       </Routes>
     </BrowserRouter>
   );

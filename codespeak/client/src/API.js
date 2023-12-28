@@ -86,6 +86,41 @@ function addQuestion(question) {
 }
 
 /**
+ * Getting from the server side and returning the list of solutions.
+ */
+const getSolutions = async () => {
+    return getJson(
+        fetch(SERVER_URL + 'solutions', { credentials: 'include' })
+    ).then(json => {
+        return json.map((solution) => {
+            const clientSolution = {
+                id: solution.id,
+                text: solution.text,
+                userid: solution.userid,
+                questionid: solution.questionid
+            }
+            return clientSolution;
+        })
+    })
+}
+
+/**
+ * This function adds a new solution in the back-end library.
+ */
+function addSolution(solution) {
+    return getJson(
+        fetch(SERVER_URL + "solutions/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(solution)
+        })
+    )
+}
+
+/**
  * This function wants username and password inside a "credentials" object.
  * It executes the log-in.
  */
@@ -124,5 +159,5 @@ const logOut = async () => {
     )
 }
 
-const API = { logIn, getUserInfo, logOut, getProjects, getQuestions, addQuestion };
+const API = { logIn, getUserInfo, logOut, getProjects, getQuestions, addQuestion, getSolutions, addSolution };
 export default API;
