@@ -381,6 +381,7 @@ function SolutionPage(props) {
     let projectid = 0;
     let projectname = "";
     let questiontitle = "";
+    let questionuserid = 0;
 
     let solution = {
         text: "",
@@ -400,6 +401,7 @@ function SolutionPage(props) {
         if (q.id == solution.questionid) {
             questiontitle = q.title;
             projectid = q.projectid;
+            questionuserid = q.userid;
         }
     }
 
@@ -420,7 +422,7 @@ function SolutionPage(props) {
                             <Nav.Link as={Link} to="/">My Projects</Nav.Link>
                             <Nav.Link as={Link} to={"/projects/" + projectid}>{projectname}</Nav.Link>
                             {
-                                question.userid == props.user.id ?
+                                questionuserid == props.user.id ?
                                     <Nav.Link as={Link} to={"/projects/" + projectid + "/myquestions"}>My questions</Nav.Link>
                                     :
                                     <Nav.Link as={Link} to={"/projects/" + projectid + "/questions"}>Questions</Nav.Link>
