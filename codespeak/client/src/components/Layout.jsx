@@ -50,6 +50,117 @@ function ProjectCard(props) {
     );
 }
 
+function QuestionsLayout(props) {
+
+    const { id } = useParams();
+
+    const projects = props.projects;
+    const questions = [];
+
+    for (let q of props.questions) {
+        if (q.projectid == id && q.userid != props.user.id) {
+            questions.push(q);
+        }
+    }
+
+    let name = "";
+
+    for (let p of projects) {
+        if (p.id == id) {
+            name = p.name;
+        }
+    }
+
+    return (
+        <>
+            <NavHeader user={props.user} />
+
+            <Container fluid>
+                <Row>
+                    <Col md={3} className="bg-light sidebar">
+                        <Nav defaultActiveKey="/" className="flex-column">
+                            <Nav.Link as={Link} to="/">My Projects</Nav.Link>
+                            <Nav.Link as={Link} to={"/projects/" + id}>{name}</Nav.Link>
+                            <Nav.Link as={Link} to={"/projects/" + id + "/questions"}>Questions</Nav.Link>
+                        </Nav>
+                    </Col>
+                    <Col md={9} className="ml-sm-auto">
+                        <h2>{name + " - other users' questions:"}</h2>
+                        {
+                            questions.map((question) =>
+                                <QuestionCard key={question.id} question={question} />
+                            )
+                        }
+                    </Col>
+                </Row>
+            </Container>
+        </>
+    );
+}
+
+function MyQuestionsLayout(props) {
+
+    const { id } = useParams();
+
+    const projects = props.projects;
+    const questions = [];
+
+    for (let q of props.questions) {
+        if (q.userid == props.user.id && q.projectid == id) {
+            questions.push(q);
+        }
+    }
+
+    let name = "";
+
+    for (let p of projects) {
+        if (p.id == id) {
+            name = p.name;
+        }
+    }
+
+    return (
+        <>
+            <NavHeader user={props.user} />
+
+            <Container fluid>
+                <Row>
+                    <Col md={3} className="bg-light sidebar">
+                        <Nav defaultActiveKey="/" className="flex-column">
+                            <Nav.Link as={Link} to="/">My Projects</Nav.Link>
+                            <Nav.Link as={Link} to={"/projects/" + id}>{name}</Nav.Link>
+                            <Nav.Link as={Link} to={"/projects/" + id + "/myquestions"}>My questions</Nav.Link>
+                        </Nav>
+                    </Col>
+                    <Col md={9} className="ml-sm-auto">
+                        <h2>{name + " - my questions:"}</h2>
+                        {
+                            questions.map((question) =>
+                                <QuestionCard key={question.id} question={question} />
+                            )
+                        }
+                    </Col>
+                </Row>
+            </Container>
+        </>
+    );
+}
+
+function QuestionCard(props) {
+
+    return (
+        <Card>
+            <Card.Body>
+                <Card.Title>{props.question.title}</Card.Title>
+                <Card.Text>{props.question.description}</Card.Text>
+                <Link to={`/questions/${props.question.id}`}>
+                    <Button variant="primary">Details</Button>
+                </Link>
+            </Card.Body>
+        </Card>
+    );
+}
+
 function ProjectDetailsLayout(props) {
 
     const { id } = useParams();
@@ -82,6 +193,12 @@ function ProjectDetailsLayout(props) {
                         <p>{description}</p>
                         <Link to={"/projects/" + id + "/make-question"}>
                             <Button variant="primary">Make a question</Button>
+                        </Link>
+                        <Link to={"/projects/" + id + "/myquestions"}>
+                            <Button variant="primary">My questions</Button>
+                        </Link>
+                        <Link to={"/projects/" + id + "/questions"}>
+                            <Button variant="primary">Other users' questions</Button>
                         </Link>
                     </Col>
                 </Row>
@@ -170,7 +287,7 @@ function QuestionForm(props) {
                     </Container>
                 </>
                 :
-                <Navigate replace to={"/questions/" + questionid } />
+                <Navigate replace to={"/questions/" + questionid} />
             }</>
 
 
@@ -182,22 +299,57 @@ function QuestionPage(props) {
     const { qid } = useParams();
 
     const questions = props.questions;
+    const projects = props.projects;
 
     let question = {
         title: "",
-        description: ""
+        description: "",
+        projectid: 0,
+        userid: 0
     };
 
     for (let q of questions) {
         if (q.id == qid) {
             question.title = q.title;
             question.description = q.description;
+            question.projectid = q.projectid;
+            question.userid = q.userid;
+        }
+    }
+
+    let projectname = "";
+
+    for (let p of projects) {
+        if (p.id == question.projectid) {
+            projectname = p.name;
         }
     }
 
     return (
         <>
-            <h1>{question.title}</h1>
+            <NavHeader user={props.user} />
+
+            <Container fluid>
+                <Row>
+                    <Col md={3} className="bg-light sidebar">
+                        <Nav defaultActiveKey="/" className="flex-column">
+                            <Nav.Link as={Link} to="/">My Projects</Nav.Link>
+                            <Nav.Link as={Link} to={"/projects/" + question.projectid}>{projectname}</Nav.Link>
+                            {
+                                question.userid == props.user.id ?
+                                    <Nav.Link as={Link} to={"/projects/" + question.projectid + "/myquestions"}>My questions</Nav.Link>
+                                    :
+                                    <Nav.Link as={Link} to={"/projects/" + question.projectid + "/questions"}>Questions</Nav.Link>
+                            }
+                            <Nav.Link as={Link} to={"/questions/" + qid}>{question.title}</Nav.Link>
+                        </Nav>
+                    </Col>
+                    <Col md={9} className="ml-sm-auto">
+                        <h2>{question.title}</h2>
+                        <p>{question.description}</p>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 }
@@ -212,4 +364,4 @@ function LoginLayout(props) {
     );
 }
 
-export { MainLayout, ProjectDetailsLayout, QuestionForm, QuestionPage, LoginLayout };
+export { MainLayout, ProjectDetailsLayout, QuestionForm, QuestionPage, QuestionsLayout, MyQuestionsLayout, LoginLayout };
