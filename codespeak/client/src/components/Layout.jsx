@@ -50,9 +50,64 @@ function ProjectCard(props) {
     );
 }
 
+function ProjectDetailsLayout(props) {
+
+    const { id } = useParams();
+    const projects = props.projects;
+
+    const navigate = useNavigate();
+
+    let name = "";
+    let description = "";
+
+    for (let project of projects) {
+        if (project.id == id) {
+            name = project.name;
+            description = project.description;
+        }
+    }
+
+    return (
+        <>
+            <NavHeader user={props.user} />
+
+            <Container fluid>
+                <Row>
+                    <Col md={3} className="bg-light sidebar">
+                        <Nav defaultActiveKey="/" className="flex-column">
+                            <Nav.Link as={Link} to="/">My Projects</Nav.Link>
+                            <Nav.Link eventKey="disabled" disabled>{name}</Nav.Link>
+                        </Nav>
+                    </Col>
+                    <Col md={9} className="ml-sm-auto">
+                        <Button variant="secondary" onClick={() => {
+                            navigate("/");
+                        }}>
+                            Go Back
+                        </Button>
+                        <h2>{name}</h2>
+                        <p>{description}</p>
+                        <Link to={"/projects/" + id + "/make-question"}>
+                            <Button variant="primary">Make a question</Button>
+                        </Link>
+                        <Link to={"/projects/" + id + "/myquestions"}>
+                            <Button variant="primary">My questions</Button>
+                        </Link>
+                        <Link to={"/projects/" + id + "/questions"}>
+                            <Button variant="primary">Other users' questions</Button>
+                        </Link>
+                    </Col>
+                </Row>
+            </Container>
+        </>
+    );
+}
+
 function QuestionsLayout(props) {
 
     const { id } = useParams();
+
+    const navigate = useNavigate();
 
     const projects = props.projects;
     const questions = [];
@@ -85,6 +140,11 @@ function QuestionsLayout(props) {
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
+                        <Button variant="secondary" onClick={() => {
+                            navigate("/projects/" + id);
+                        }}>
+                            Go Back
+                        </Button>
                         <h2>{name + " - other users' questions:"}</h2>
                         {
                             questions.map((question) =>
@@ -101,6 +161,8 @@ function QuestionsLayout(props) {
 function MyQuestionsLayout(props) {
 
     const { id } = useParams();
+
+    const navigate = useNavigate();
 
     const projects = props.projects;
     const questions = [];
@@ -133,6 +195,11 @@ function MyQuestionsLayout(props) {
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
+                        <Button variant="secondary" onClick={() => {
+                            navigate("/projects/" + id);
+                        }}>
+                            Go Back
+                        </Button>
                         <h2>{name + " - my questions:"}</h2>
                         {
                             questions.map((question) =>
@@ -158,52 +225,6 @@ function QuestionCard(props) {
                 </Link>
             </Card.Body>
         </Card>
-    );
-}
-
-function ProjectDetailsLayout(props) {
-
-    const { id } = useParams();
-    const projects = props.projects;
-
-    let name = "";
-    let description = "";
-
-    for (let project of projects) {
-        if (project.id == id) {
-            name = project.name;
-            description = project.description;
-        }
-    }
-
-    return (
-        <>
-            <NavHeader user={props.user} />
-
-            <Container fluid>
-                <Row>
-                    <Col md={3} className="bg-light sidebar">
-                        <Nav defaultActiveKey="/" className="flex-column">
-                            <Nav.Link as={Link} to="/">My Projects</Nav.Link>
-                            <Nav.Link eventKey="disabled" disabled>{name}</Nav.Link>
-                        </Nav>
-                    </Col>
-                    <Col md={9} className="ml-sm-auto">
-                        <h2>{name}</h2>
-                        <p>{description}</p>
-                        <Link to={"/projects/" + id + "/make-question"}>
-                            <Button variant="primary">Make a question</Button>
-                        </Link>
-                        <Link to={"/projects/" + id + "/myquestions"}>
-                            <Button variant="primary">My questions</Button>
-                        </Link>
-                        <Link to={"/projects/" + id + "/questions"}>
-                            <Button variant="primary">Other users' questions</Button>
-                        </Link>
-                    </Col>
-                </Row>
-            </Container>
-        </>
     );
 }
 
@@ -380,6 +401,8 @@ function QuestionPage(props) {
 
     const { qid } = useParams();
 
+    const navigate = useNavigate();
+
     const questions = props.questions;
     const projects = props.projects;
     const solutions = props.solutions;
@@ -440,6 +463,20 @@ function QuestionPage(props) {
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
+                        {
+                            question.userid == props.user.id ?
+                                <Button variant="secondary" onClick={() => {
+                                    navigate("/projects/" + question.projectid + "/myquestions");
+                                }}>
+                                    Go Back
+                                </Button>
+                                :
+                                <Button variant="secondary" onClick={() => {
+                                    navigate("/projects/" + question.projectid + "/questions");
+                                }}>
+                                    Go Back
+                                </Button>
+                        }
                         <h2>{question.title}</h2>
                         <p>{question.description}</p>
                         <h4>{"The AI has found " + aisolutions.length + " possible solutions:"}</h4>
@@ -454,6 +491,12 @@ function QuestionPage(props) {
                                 <SolutionCard key={solution.id} solution={solution} />
                             )
                         }
+                        {
+                            question.userid == props.user.id ?
+                                <></>
+                                :
+                                <Button variant="primary">Propose solution</Button>
+                        }
                     </Col>
                 </Row>
             </Container>
@@ -464,6 +507,8 @@ function QuestionPage(props) {
 function SolutionPage(props) {
 
     const { sid } = useParams();
+
+    const navigate = useNavigate();
 
     const solutions = props.solutions;
     const questions = props.questions;
@@ -523,6 +568,11 @@ function SolutionPage(props) {
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
+                        <Button variant="secondary" onClick={() => {
+                            navigate("/questions/" + solution.questionid);
+                        }}>
+                            Go Back
+                        </Button>
                         <h2>{"Solution by user #" + solution.userid}</h2>
                         <p>{solution.text}</p>
                     </Col>
