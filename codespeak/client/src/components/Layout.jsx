@@ -161,21 +161,6 @@ function QuestionCard(props) {
     );
 }
 
-function SolutionCard(props) {
-
-    return (
-        <Card>
-            <Card.Body>
-                <Card.Title>{"Solution by user #" + props.solution.userid}</Card.Title>
-                <Card.Text>{props.solution.text}</Card.Text>
-                <Link to={`/solutions/${props.solution.id}`}>
-                    <Button variant="primary">Details</Button>
-                </Link>
-            </Card.Body>
-        </Card>
-    );
-}
-
 function ProjectDetailsLayout(props) {
 
     const { id } = useParams();
@@ -309,12 +294,43 @@ function QuestionForm(props) {
     );
 }
 
+function SolutionCard(props) {
+
+    return (
+        <Card>
+            <Card.Body>
+                <Card.Title>{"Solution by user #" + props.solution.userid}</Card.Title>
+                <Card.Text>{props.solution.text}</Card.Text>
+                <Link to={`/solutions/${props.solution.id}`}>
+                    <Button variant="primary">Details</Button>
+                </Link>
+            </Card.Body>
+        </Card>
+    );
+}
+
+function AISolutionCard(props) {
+
+    return (
+        <Card>
+            <Card.Body>
+                <Card.Title>{"Solution by user #" + props.solution.userid}</Card.Title>
+                <Card.Text>{props.solution.text}</Card.Text>
+            </Card.Body>
+        </Card>
+    );
+}
+
 function QuestionPage(props) {
 
     const { qid } = useParams();
 
     const questions = props.questions;
     const projects = props.projects;
+    const solutions = props.solutions;
+
+    let aisolutions = [];
+    let usersolutions = [];
 
     let question = {
         title: "",
@@ -340,6 +356,15 @@ function QuestionPage(props) {
         }
     }
 
+    for (let s of solutions) {
+        if (s.questionid == qid && s.userid != question.userid) {
+            usersolutions.push(s);
+        }
+        if (s.questionid != qid && s.userid != question.userid && aisolutions.length < 3) {
+            aisolutions.push(s);
+        }
+    }
+
     return (
         <>
             <NavHeader user={props.user} />
@@ -362,7 +387,18 @@ function QuestionPage(props) {
                     <Col md={9} className="ml-sm-auto">
                         <h2>{question.title}</h2>
                         <p>{question.description}</p>
-                        <h4>The AI has found 2 possible solutions:</h4>
+                        <h4>{"The AI has found " + aisolutions.length + " possible solutions:"}</h4>
+                        {
+                            aisolutions.map((solution) =>
+                                <AISolutionCard key={solution.id} solution={solution} />
+                            )
+                        }
+                        <h4>{"There are " + usersolutions.length + " possible solutions from other users:"}</h4>
+                        {
+                            usersolutions.map((solution) =>
+                                <SolutionCard key={solution.id} solution={solution} />
+                            )
+                        }
                     </Col>
                 </Row>
             </Container>
@@ -427,7 +463,8 @@ function SolutionPage(props) {
                                     :
                                     <Nav.Link as={Link} to={"/projects/" + projectid + "/questions"}>Questions</Nav.Link>
                             }
-                            <Nav.Link as={Link} to={"/questions/" + qid}>{questiontitle}</Nav.Link>
+                            <Nav.Link as={Link} to={"/questions/" + solution.questionid}>{questiontitle}</Nav.Link>
+                            <Nav.Link as={Link} to={"/solutions/" + sid}>{"Solution by user #" + solution.userid}</Nav.Link>
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
@@ -450,4 +487,4 @@ function LoginLayout(props) {
     );
 }
 
-export { MainLayout, ProjectDetailsLayout, QuestionForm, QuestionPage, QuestionsLayout, MyQuestionsLayout, LoginLayout };
+export { MainLayout, ProjectDetailsLayout, QuestionForm, QuestionPage, QuestionsLayout, MyQuestionsLayout, SolutionPage, LoginLayout };
