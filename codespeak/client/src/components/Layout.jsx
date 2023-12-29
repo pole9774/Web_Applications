@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Row, Col, Button, Container, Nav, Card, Form } from 'react-bootstrap';
 import { Link, useParams, Navigate } from 'react-router-dom';
 
@@ -223,6 +223,7 @@ function QuestionForm(props) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questionid, setQuestionid] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     const addQuestion = (e) => {
         API.addQuestion(e)
@@ -232,6 +233,16 @@ function QuestionForm(props) {
             })
             .catch((err) => handleErrors(err));
     }
+
+    useEffect(() => {
+        const AIloading = async () => {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            setLoading(false);
+        }
+        if (questionid != 0) {
+            AIloading();
+        }
+    }, [questionid]);
 
     return (
 
@@ -287,10 +298,14 @@ function QuestionForm(props) {
                     </Container>
                 </>
                 :
-                <Navigate replace to={"/questions/" + questionid} />
+                <>
+                    {loading ?
+                        <h2>Waiting for AI response...</h2>
+                        :
+                        <Navigate replace to={"/questions/" + questionid} />
+                    }
+                </>
             }</>
-
-
     );
 }
 
