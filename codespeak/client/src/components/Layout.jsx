@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
-import { Row, Col, Button, Container, Nav, Card, Form } from 'react-bootstrap';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Row, Col, Button, Container, Nav, Card, Form, Modal } from 'react-bootstrap';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 
 import { LoginForm } from './Auth';
 import NavHeader from './Navbar';
@@ -244,6 +244,27 @@ function QuestionForm(props) {
         }
     }, [questionid]);
 
+    const navigate = useNavigate();
+
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const handleGoBack = () => {
+        if (title || description) {
+            setShowConfirmation(true);
+        } else {
+            navigate("/projects/" + id);
+        }
+    };
+
+    const handleCloseConfirmation = () => {
+        setShowConfirmation(false);
+    };
+
+    const handleConfirmGoBack = () => {
+        navigate("/projects/" + id);
+        handleCloseConfirmation();
+    };
+
     return (
         <>
             {questionid == 0 ?
@@ -260,6 +281,9 @@ function QuestionForm(props) {
                                 </Nav>
                             </Col>
                             <Col md={9} className="ml-sm-auto">
+                                <Button variant="secondary" onClick={handleGoBack}>
+                                    Go Back
+                                </Button>
                                 <h2>{name}</h2>
                                 <h2>Your question:</h2>
                                 <Form>
@@ -283,6 +307,23 @@ function QuestionForm(props) {
                                         />
                                     </Form.Group>
                                 </Form>
+
+                                <Modal show={showConfirmation} onHide={handleCloseConfirmation}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>Confirm Go Back</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        Are you sure you want to go back? Your changes will be lost.
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button variant="secondary" onClick={handleCloseConfirmation}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="primary" onClick={handleConfirmGoBack}>
+                                            Confirm
+                                        </Button>
+                                    </Modal.Footer>
+                                </Modal>
 
                                 <Button variant="primary" onClick={() => {
                                     const question = {
