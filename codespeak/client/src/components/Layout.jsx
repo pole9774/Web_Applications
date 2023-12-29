@@ -18,7 +18,7 @@ function MainLayout(props) {
                 <Row>
                     <Col md={3} className="bg-light sidebar">
                         <Nav defaultActiveKey="/" className="flex-column">
-                            <Nav.Link as={Link} to="/">My Projects</Nav.Link>
+                            <Nav.Link eventKey="disabled" disabled>My Projects</Nav.Link>
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
@@ -81,7 +81,7 @@ function QuestionsLayout(props) {
                         <Nav defaultActiveKey="/" className="flex-column">
                             <Nav.Link as={Link} to="/">My Projects</Nav.Link>
                             <Nav.Link as={Link} to={"/projects/" + id}>{name}</Nav.Link>
-                            <Nav.Link as={Link} to={"/projects/" + id + "/questions"}>Questions</Nav.Link>
+                            <Nav.Link eventKey="disabled" disabled>Questions</Nav.Link>
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
@@ -129,7 +129,7 @@ function MyQuestionsLayout(props) {
                         <Nav defaultActiveKey="/" className="flex-column">
                             <Nav.Link as={Link} to="/">My Projects</Nav.Link>
                             <Nav.Link as={Link} to={"/projects/" + id}>{name}</Nav.Link>
-                            <Nav.Link as={Link} to={"/projects/" + id + "/myquestions"}>My questions</Nav.Link>
+                            <Nav.Link eventKey="disabled" disabled>My questions</Nav.Link>
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
@@ -185,7 +185,7 @@ function ProjectDetailsLayout(props) {
                     <Col md={3} className="bg-light sidebar">
                         <Nav defaultActiveKey="/" className="flex-column">
                             <Nav.Link as={Link} to="/">My Projects</Nav.Link>
-                            <Nav.Link as={Link} to={"/projects/" + id}>{name}</Nav.Link>
+                            <Nav.Link eventKey="disabled" disabled>{name}</Nav.Link>
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
@@ -245,7 +245,6 @@ function QuestionForm(props) {
     }, [questionid]);
 
     return (
-
         <>
             {questionid == 0 ?
                 <>
@@ -257,7 +256,7 @@ function QuestionForm(props) {
                                 <Nav defaultActiveKey="/" className="flex-column">
                                     <Nav.Link as={Link} to="/">My Projects</Nav.Link>
                                     <Nav.Link as={Link} to={"/projects/" + id}>{name}</Nav.Link>
-                                    <Nav.Link as={Link} to={"/projects/" + id + "/make-question"}>Make a question</Nav.Link>
+                                    <Nav.Link eventKey="disabled" disabled>Make a question</Nav.Link>
                                 </Nav>
                             </Col>
                             <Col md={9} className="ml-sm-auto">
@@ -396,7 +395,7 @@ function QuestionPage(props) {
                                     :
                                     <Nav.Link as={Link} to={"/projects/" + question.projectid + "/questions"}>Questions</Nav.Link>
                             }
-                            <Nav.Link as={Link} to={"/questions/" + qid}>{question.title}</Nav.Link>
+                            <Nav.Link eventKey="disabled" disabled>{question.title}</Nav.Link>
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
@@ -479,7 +478,7 @@ function SolutionPage(props) {
                                     <Nav.Link as={Link} to={"/projects/" + projectid + "/questions"}>Questions</Nav.Link>
                             }
                             <Nav.Link as={Link} to={"/questions/" + solution.questionid}>{questiontitle}</Nav.Link>
-                            <Nav.Link as={Link} to={"/solutions/" + sid}>{"Solution by user #" + solution.userid}</Nav.Link>
+                            <Nav.Link eventKey="disabled" disabled>{"Solution by user #" + solution.userid}</Nav.Link>
                         </Nav>
                     </Col>
                     <Col md={9} className="ml-sm-auto">
